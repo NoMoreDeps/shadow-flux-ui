@@ -1,0 +1,27 @@
+{
+  "devDependencies": {
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.3",
+    "typescript": "3.7.1-rc",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.5.2",
+    "@material-ui/icons": "^4.5.1",
+    "@material-ui/lab": "^4.0.0-alpha.31",
+    "@material-ui/styles": "^4.5.2",
+    "classnames": "^2.2.6",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-object-inspector": "^0.2.1"
+  },
+  "name": "shadow-flux-ui",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "pk": "yarn tsc --incremental && yarn webpack --entry ./out/App.js --output ./www/js/app.js",
+    "pkw": "yarn webpack --entry ./out/App.js --output ./www/js/app.js --watch"
+  }
+}
