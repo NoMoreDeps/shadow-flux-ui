@@ -12,6 +12,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CropIcon from '@material-ui/icons/Crop';
 import SaveIcon from '@material-ui/icons/Save';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
+import { TreeviewExplorer } from './components/TreeviewExplorer';
 
 declare var Prism : any;
 declare var mermaid: any;
@@ -284,9 +285,12 @@ export function Layout(props: {frames: Array<CycleEvent[]>, onFrameChange: any})
                             </Typography>
                           )
                           res.push(
-                            <pre className="line-numbers">
+                            /*<pre className="line-numbers">
                               <code className="language-json">{str((_ as any)[i])}</code>
-                            </pre>
+                            </pre>*/
+                            <div style={{maxHeight: 350, overflowY: "auto"}}>
+                              <TreeviewExplorer data={(_ as any)[i]} />
+                            </div>
                           )
                         }
                         return res;
