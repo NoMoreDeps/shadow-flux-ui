@@ -1534,7 +1534,7 @@
         "signature": "087d0c05ed8b64f931b855ab90588678e3bc7522845e535c8c4849d68a3496e1"
       },
       "./src/layout.tsx": {
-        "version": "badd1026d7c5430f370edfb9a917eda37a14a33e0fb319ab1eab156379830847",
+        "version": "cd9402fbb5e325a38d100bf07509ec89d67bf0366630e265e9bc5864f3bf8fde",
         "signature": "5ff3c4ec7379a74349cac91ee796c37a26991e990ca6bec02a190ea43d81044d"
       },
       "./src/app.tsx": {
@@ -1569,6 +1569,7 @@
       "outDir": "./out",
       "rootDir": "./src",
       "strict": true,
+      "noImplicitAny": false,
       "esModuleInterop": true,
       "forceConsistentCasingInFileNames": true,
       "incremental": true,
@@ -6089,26 +6090,14 @@
       "./node_modules/@material-ui/icons/crop.d.ts",
       "./node_modules/@material-ui/icons/save.d.ts",
       "./node_modules/@material-ui/icons/openinbrowser.d.ts",
-      "./src/layout.tsx",
+      "./src/components/treeviewexplorer.tsx",
       "./src/app.tsx",
       "./node_modules/@types/react-transition-group/csstransition.d.ts",
       "./node_modules/@types/react-transition-group/transitiongroup.d.ts",
       "./node_modules/@types/react-transition-group/switchtransition.d.ts",
       "./node_modules/@types/react-transition-group/config.d.ts",
       "./node_modules/@types/react-transition-group/index.d.ts",
-      [
-        "./src/components/treeviewexplorer.tsx",
-        [
-          {
-            "file": "./src/components/treeviewexplorer.tsx",
-            "start": 911,
-            "length": 1,
-            "messageText": "Parameter '_' implicitly has an 'any' type.",
-            "category": 1,
-            "code": 7006
-          }
-        ]
-      ]
+      "./src/layout.tsx"
     ]
   },
   "version": "3.7.1-rc"

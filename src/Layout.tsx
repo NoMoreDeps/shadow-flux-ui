@@ -13,6 +13,8 @@ import CropIcon from '@material-ui/icons/Crop';
 import SaveIcon from '@material-ui/icons/Save';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { TreeviewExplorer } from './components/TreeviewExplorer';
+import Inspector from "react-json-inspector";
+
 
 declare var Prism : any;
 declare var mermaid: any;
@@ -108,20 +110,6 @@ function formatName(name: string) {
   }
 
   return n;
-}
-let marks = (() => {
-  const res = [];
-  for (let i = 0.2; i <= 1; i+= 0.1) {
-    res.push({
-      label: i.toString(),
-      value: i
-    });
-    return res;
-  }
-})();
-
-function valueLabelFormat(value: number) {
-  return marks!.findIndex(mark => mark.value === value) + 1;
 }
 
 function generateGraph(cycle: CycleEvent[]) {
@@ -259,7 +247,7 @@ export function Layout(props: {frames: Array<CycleEvent[]>, onFrameChange: any})
                     <TableBody>
                       {
                         (() => {
-                          const res = [];
+                          const res = [] as JSX.Element[];
                           for(let i in _) {
                             if (typeof((_ as any)[i]) === "object") continue;
                             res.push(
@@ -276,20 +264,17 @@ export function Layout(props: {frames: Array<CycleEvent[]>, onFrameChange: any})
                   </Table>
                   {
                       (() => {
-                        const res = [];
+                        const res = [] as JSX.Element[];
                         for(let i in _) {
                           if (typeof((_ as any)[i]) !== "object") continue;
                           res.push(
                             <Typography variant="body2" display="block" gutterBottom>
-                              {i} :
+                              <span>{i} :</span>
                             </Typography>
                           )
                           res.push(
-                            /*<pre className="line-numbers">
-                              <code className="language-json">{str((_ as any)[i])}</code>
-                            </pre>*/
-                            <div style={{maxHeight: 350, overflowY: "auto"}}>
-                              <TreeviewExplorer data={(_ as any)[i]} />
+                            <div style={{maxHeight: 350, overflowY: "auto", padding: 10, border: "1px dashed #70b790"}}>
+                              <Inspector data={(_ as any)[i]} />
                             </div>
                           )
                         }

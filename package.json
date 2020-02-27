@@ -14,6 +14,7 @@
     "classnames": "^2.2.6",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
+    "react-json-inspector": "^7.1.1",
     "react-object-inspector": "^0.2.1"
   },
   "name": "shadow-flux-ui",
