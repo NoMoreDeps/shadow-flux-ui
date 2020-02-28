@@ -15,9 +15,7 @@ import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { TreeviewExplorer } from './components/TreeviewExplorer';
 import Inspector from "react-json-inspector";
 
-
-declare var Prism : any;
-declare var mermaid: any;
+declare var flowjs: any;
 
 function str(data: any) {
   
@@ -115,58 +113,56 @@ function formatName(name: string) {
 function generateGraph(cycle: CycleEvent[]) {
   if (!cycle) return "";
 
-  let res = "";
-  const processedItems = new Array<string>();
+  let res = [] as Array<any>;
+  const processedItems = {} as { [key: string]: Array<string> }
+  const processedItemsId = {} as { [key: string]: number }
   let stackId = 0;
+  let PId = 0;
 
-  res+=(`stateDiagram\n`);
   cycle.forEach((_,idx) => {
     switch(_.type) {
-      case "Dispatch":
-        res += `Dispatch : ${_.payload.type}\n`;
-        res += `[*] --> Dispatch\n`;
-      break;
       case "StoreProcess":
-        res += `Dispatch --> ${formatName(_.owner)}\n`;
-        processedItems.push(_.owner);
+        processedItems[formatName(_.owner)] = ["Dispatch", formatName(_.owner)];
+        processedItemsId[formatName(_.owner)] = PId++;
       break;
       case "EndWaitFor":
         _.waitList.forEach(s => {
-          res += `${s} --> ${formatName(_.owner)}\n`;
-          processedItems.push(formatName(_.owner));
-        })
+          processedItems[`${s} --> ${formatName(_.owner)}`] = [s, formatName(_.owner)];
+        });
       break;
       case "NextState":
-        res += `${formatName(_.storeId)} --> ${formatName(_.storeId)}_StateUpdated\n`;
-        processedItems.push(`${formatName(_.storeId)}_StateUpdated`);
+        processedItems[formatName(_.storeId)].push(`${processedItemsId[formatName(_.storeId)]}_Updated`);
       break;
       case "UpdatedState":
-        if (processedItems.indexOf(`${formatName(_.storeId)}_StateUpdated`) !== -1) {
-          res += `${formatName(_.storeId)}_StateUpdated --> ${formatName(_.storeId)}_EmitUpdate\n`;
-        } else {
-          res += `${formatName(_.storeId)} --> ${formatName(_.storeId)}_EmitUpdate\n`;
-        }
-        processedItems.push(`${formatName(_.storeId)}_EmitUpdate`);
+      processedItems[formatName(_.storeId)].indexOf(`${processedItemsId[formatName(_.storeId)]}_Updated`) !== -1 &&
+        processedItems[formatName(_.storeId)].push(`${processedItemsId[formatName(_.storeId)]}_EmitUpdate`);
       break;
       case "CallBack":
-          res += `${formatName(_.event.split(".")[1])}_EmitUpdate --> View_${_.id}\n`;
+        processedItems[formatName(_.event.split(".")[1])].push(`View_${_.id}`);
       break;
       case "Stack":
-        res += `${_.type}_${++stackId} --> Dispatch\n`;
-        res += `${_.type}_${stackId} : ${_.payload.type}\n`
+        processedItems[`${_.type}_${++stackId}`] = [`${_.type}_${++stackId}`, "Dispatch"]
         break;
     }
   });
 
+  for(let i in processedItems) {
+    if (processedItems[i].length > 2) {
+      res.push(processedItems[i]);
+    } else {
+      processedItems[i][0] !== "Dispatch" && res.push(processedItems[i]);
+    };
+  }
+
+  console.log(res)
   return res;
 }
 
 export function Layout(props: {frames: Array<CycleEvent[]>, onFrameChange: any}) {
   const styles = useStyles();
-  setTimeout(() => Prism.highlightAll(), 0);
 
   const [frameIdx, setFrameIdx] = useState(0);
-  const [zoomLevel, setZoomLevel] = useState(.5);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   return (<>
   <AppBar position="fixed" color="default">
@@ -212,7 +208,7 @@ export function Layout(props: {frames: Array<CycleEvent[]>, onFrameChange: any})
         <Divider orientation="vertical" style={{marginLeft: 5, marginRight: 5}} variant="fullWidth"/>
         <Slider
           style             = {{width: "250px", justifyContent:"flex-end"}}
-          defaultValue      = {0.5}
+          defaultValue      = {1}
           onChange          = {(ev, value) => setZoomLevel(value as number)}
           aria-labelledby   = "discrete-slider"
           valueLabelDisplay = "off"
@@ -286,23 +282,22 @@ export function Layout(props: {frames: Array<CycleEvent[]>, onFrameChange: any})
               ))
             }
           </div>
-          <div className={styles.dep}>
+          <div className={styles.dep} style={{overflowX: "auto"}}>
+            <canvas id="graph" width="800" height="300"></canvas>
             {
               (() => {
                 if (props.frames[frameIdx]) {                
                   setTimeout(() => {
-                    const mermaidDiv = document.querySelector(".mermaid")! as HTMLDivElement;
-                    mermaidDiv.removeAttribute("data-processed");
-                    mermaid.init()
-                  }, 500); 
-                  return <div 
-                    key                     = {Math.random()} 
-                    style                   = {{zoom: zoomLevel}}  
-                    className               = {`mermaid ${styles.mermaidFlex}`} 
-                    dangerouslySetInnerHTML = {{__html: generateGraph(props.frames[frameIdx])}}>
-                  </div>
-                } 
+                    var graph = new flowjs.DiGraph();
+                    graph.addPaths(generateGraph(props.frames[frameIdx]));
 
+                    const flow = new flowjs.DiFlowChart("graph", graph, {zoom: zoomLevel});
+                    flow.draw();
+                    console.log(flow);
+
+                  }, 200); 
+                  return <></>;
+                }
               })()
             }
           </div>
